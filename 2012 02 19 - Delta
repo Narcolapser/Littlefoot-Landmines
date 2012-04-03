@@ -1,0 +1,30 @@
+I wrote down a while back a file I called "Game Engine Guide" which were my original thoughts on making a game engine for my own academic purposes. I realized after I posted my last post that I referenced "Delta" with out any context for my 0 readers. (I consider this blog more of a journal than anything) In my game engine guide I planned for 3 engines. Delta, Epsilon, and Zeta. Delta was to learn the technology. OpenGL, OpenCL, OpenAL, OpenMP, etc. Epsilon was designed to be my fantastic failure. I'm over the learning curve of the technology, now lets over-plan and be over ambitious and see what lessons I can learn, what my limits really are. Then Finally Zeta is the acceptance of those limits and the design and creation of a usable engine that I am capable of creating. 
+
+In the interest of what I dreamed up last time, I want to accomplish Delta, and I want to do so soon. So I'm taking a moment to decide what Delta needs to be able to be considered complete, as well as musing a bit about its architecture. 
+
+Delta is written entirely in C and C++. It uses simple polygons for its graphics and physics, both of which are computed on the GPU. The CPU is left in charge of managing the GPU and the Audio through OpenAL. Collision detection and resolution happen on the GPU, something that will take some effort for me to master, but when done will be very powerful. I had originally said that it was to have mouse looking and keyboarding. I'm removing mouse looking. There will still be the ability to trackball items, but mouse looking is not possible through glut. 
+
+So, what do I need to complete Delta?
+
+Graphics:
+	Finish reimplementing the graphics interface class to allow for a vector of models and the interchangable cameras and what not. 
+	Importing .obj files
+	Sharing location data with Physics.
+
+Physics:
+	Collision detection
+	Collision resolution
+	Gravity
+
+Sound:
+	Learn OpenAL
+	Triggers from GPU for sounds
+	Triggers from CPU for sounds
+	Internal hash library for sound effects
+
+Engine:
+	Loading main game
+	Loading levels
+	Exiting
+
+A fair bit to do. But I think I'll be able to accomplish a large chunk of this by the end of spring break. I've done a lot of work already over Christmas break. One important choice I've decided to make deals with the actual running of the engine. I've decided that the engine is to be 100% data driven. Meaning that the difference between one game and another game for the engine is solely in the assets. One game will have one set of models, sounds, scripts, etc. another will have a completely different set. The engine will be a single standalone executable. This is highly portable, highly flexible, and very simple. To play a different game you just send a different command line argument. Theoretically this would be just a different short cut to the end user that the theoretical developer would have made for the user. yes, there are flaws with this approach, but it will be sufficient for now. I just want to get Delta done so I can have something to show for my work.

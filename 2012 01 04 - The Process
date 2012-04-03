@@ -1,0 +1,39 @@
+Figures that this comes right after I posted about Test Driven Development. I'm starting a new project today, its rather a classic type of program, I'm making a concurency library. So I'll be making a lot of base classes and very testable units. I'm taking this project as a chance to walk through the whole development process. I'm going to give a little over view of it here:
+
+Requirements - Determining the needs or conditions to be meet.
+Specification - The documentation that describes the requested behavior of the system.
+Architecture - the set of structures needed to reason about a system. The software elements, relations among them, and properties of both.
+Design - the process of problem solving and planning for a software solution.
+Implementation - the actual process of writing code and debugging. what we typically think about when we think about coding.
+Testing - Running automatic tests, manual test, and anything else that can be used to varify that it meets requirements, works as expected, and can be implemented with the same characteristics.
+Deployment - All that is done to make the software available for use. executables, zip files, web sites, etc..
+Maintenance - modification of a product after delivery. basically Implementation after Deployment.
+
+Mythical Man Month, be it 40 years old, has a word to say on this topic. Particularly the balance of these 8 items. the first 2 we will categorize into pre-production. the second 2 into design. 3rd 2 into Development. and last 2 into maintenance. According to MM-M, the first 2 should take 25% of your time each! that means you will spend half of your time on this project just simply preparing to write the program and won't actually write a single line of code. I know that sounds strange, if I was a construction work and told my boss I need to stpend half of the time just preparing for the project, I'd be fired. But the thing is, Construction projects do spend a large amount of time in preparation, its just that by the time it gets to the construction worker, all of the preparation is complete. it isn't a very good analogy as construction tends to speend far more time in production than preperation compared to software development, but my point remains. You need to spend a lot of time planing and designing, it will actually save you time in the long run.
+
+The 3rd category, Development, will win exactly 1/6th of the time on your project. Yea, again, tiny. The reason being is that by the time you get here, you will know so well exactly what you need to do that you will sit down and just write out code at a frightening pace. You won't have to go back and rework things as much because you'll get it write the first time. you'll spend less time thinking about what needs to be writen as you know exactly what needs to be written already. 
+
+The 4th category gets the remaining 1/3 of your time, maintenance. The good thing about this though is that you will have spent so much time carefully writing designs and specifications that maintenence won't be the horrific nightmare we all know. You'll have every detail marked out and batteries of tests to keep everything in tip top shape. 
+
+That's the breif summary of the process, now on to my actual attempt at it!
+
+I know I won't finish this library in the time I am home. That's ok, but because of that I am going to cut some of those time frames a little short because I want to fit this all into a day and I know I'm not going to write this all in a single day. So I'm alotting 2 hours pre-production, 2 hours for design, and then 2 hours for deveopment. I don't really have a deployment or maintenance, so I'm not going to concern myself with that. 
+
+I've read over a couple of programing methodologies, and I get the feeling that people are far to focused. a lot of the methodologies, iterative, TDD, really are just focusing on the imlementation step. Agile, Scrum, waterfall, and the like however focus on the entire system as a whole. To each their own, I know that a lot of these work and they all have their advantages. But they are also focused on large projects with multiple people. For example, I'm not going to have a stand up meeting with myself. So I'm not using agile. This is what I plan on doing, introducing! the Littlefoot methodology:
+
+1. Think of every of all the common uses of your program. what is the intended uses? Write down what those uses need. Now, with the time you have left, abuse it. What are some of the edge cases you can think of for your program? what might be some of the un-intended yet still very viable uses of your program? How can you accomidate for these to keep your program robust? or how can you prevent these uses if they are security or performance pitfalls?
+
+2. Pretend that your program is down. write down some examples of using it. Describe its behavior. What are the characteristics of the implementation. If you think of any further needs while you are doing this, jump back to step one and add them in.
+
+3. Test Driven Development goes here:
+     a. write a test that checks for one of the needs from step 1.
+     b. run the test. if it passes, go back to step 3.a.
+     c. write code to satisfy that test.
+     d. run all tests. if any fail, step back to step 3.c.
+     e. clean up your code and repeat untill all requirements listed from step one are being tested for.
+
+4. take a break.
+
+I believe in occam's razor. My entire development process can be described in 3 steps. When you actualy write your program, remember that. if there are two ways to accomplish something, the most simple one is the best one. keep programs as simple as you can, modular programing really helps with achieve this. 
+
+Alright. I'm going to probably post again later today, But that will be after steps 1 and 2. Time to go ponder in a big cushie chair away from my computer with nothing but a pencil and paper to program with. ^_^

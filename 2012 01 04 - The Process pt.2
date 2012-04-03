@@ -1,0 +1,18 @@
+So I've spend the last 2 hours writing down everything I can think of in terms of how the library should work. Its proven to be incredibly insightful. I now actually know what I'm building. I wanted to comment to a revision in my little methodology as I realized I have left something out:
+
+1. Think of every of all the common uses of your program. what is the intended uses? Write down what those uses need. Now, with the time you have left, abuse it. What are some of the edge cases you can think of for your program? what might be some of the un-intended yet still very viable uses of your program? How can you accomidate for these to keep your program robust? or how can you prevent these uses if they are security or performance pitfalls?
+
+2. Pretend that your program is down. write down some examples of using it. Describe its behavior. What are the characteristics of the implementation. If you think of any further needs while you are doing this, jump back to step one and add them in.
+
+3. Figure out what are the atomic peices. What is it impossible to cut any smaller? start building your architecture there. don't be specific in how these peices are made, just describe them. start putting the peices together to make ever larger peices until you've encompassed everything.
+
+4. Test Driven Development goes here:
+     a. write a test that checks for one of the needs from step 1.
+     b. run the test. if it passes, go back to step 3.a.
+     c. write code to satisfy that test.
+     d. run all tests. if any fail, step back to step 3.c.
+     e. clean up your code and repeat untill all requirements listed from step one are being tested for.
+
+5. take a break.
+
+On to step 3!

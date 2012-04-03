@@ -1,0 +1,17 @@
+Technically this is on the 22nd, but I really meant it to be 20 minutes ago. anyway. I've got the next batch of commentaries done. I've taken to calling them commentaries in contrast to tutorials, because if you want the tutorial, go to the wiki book:
+http://en.wikibooks.org/wiki/OpenGL_Programming
+That is just the tutorial I'm following. I'm just adding to it to help some people along. mostly this are honestly just to help me think through things. but in the off chance that they help some one else. sweet. enjoy:
+
+Post #2:
+Iteration 3: Reworking to a more realistic structure. http://ubuntuone.com/7U1XYhl9mGZ4yZYaqhZ64m
+	Shaders: 
+		Vertex: http://ubuntuone.com/4ZrLzCehpNKZE3PaARt2Ba
+		Fragment: http://ubuntuone.com/704GrSTKd4cScbGFgVXrpH
+Iteration 4: Introducing: vertex buffer objects! http://ubuntuone.com/5fs10HkxtTBMwjz6fYfDRr
+Iteration 5: Passing info to the vertex shader. http://ubuntuone.com/0T9jrTO0VLVwJ5TZmpfMGb
+	Shader: http://ubuntuone.com/1AxTYmt1u0RoctM8rrJNSf
+Iteration 6: Passing info from vertex to fragment shaders. http://ubuntuone.com/5lZLKc4TgbMLibdfWvWeBj
+	Shaders:
+		Vertex: http://ubuntuone.com/6wO4HsNneZPjpN6FcY3cqy
+		Fragment: http://ubuntuone.com/6MMcT6CwevGQP137kW8ynZ
+Iteration 7: Interweaving in buffer objects. http://ubuntuone.com/5wPAnKYTgJiyhAmcGoxqQa

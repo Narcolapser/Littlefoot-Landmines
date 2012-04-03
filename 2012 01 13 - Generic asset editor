@@ -1,0 +1,9 @@
+I had an idea a while back that it would be nice if you could have one program that you use for all of your asset creation. one program you can use for pictures, sound, models, etc.. Now, obviously, if doing such was an easy endevour, it would have been done long ago. But nothing has really come close to being an editor like that. its hard, think about all the things blender has in it and it can manipulate only a small set of what is needed to make a game. 
+
+So I stopped, and I thought "what does an editor do?" and put as simple as it possibly could be, an editor reads a file, changes values, and writes a file. That is as simple as it comes. Looking at blender's node system for compositing, I thought "what if an editor could work this way?" meaning, instead of making a tool that can edit all sorts of things and then having to add functionality for each new type of file, why not make a program that can't edit anything, but can be made to edit everything?
+
+Like blender's nodes, there would be inputs and outputs from a node. what the node actually does is entirely liquid. inside a node there would just simply python code. so image a file reader node. it takes a file name as its input and a string as its output. you can make a decoder node that reads from a file and translates the values into variables that you can work with in other nodes. 
+
+Now, this is all good but there is one peice that remains for this to make sense. Editor nodes. These are nodes that the user would have to create using a UI painter inside of this editor which could be made to edit anything. This node I'm still not entirely sure of how its made, but the idea is compelling. One of the things I see having a huge potential here is pipelines. where you want to work on one asset, or group of assets, but you open them up and the pipe line runs until it hits an editor node. 
+
+Its a rough idea that I'll probably post more about later. but for now sleep.

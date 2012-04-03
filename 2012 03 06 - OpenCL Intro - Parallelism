@@ -1,0 +1,45 @@
+Try number two. I've taken everything I'm that I learned recently and am going to apply it in this post. I'm starting over with my openCL stuff and starting with the base knowledge. Parallelism just as before. If this was a book, I'd call this set of posts a chapter if they were in a book, but as it is, these posts are just meant to be a complete unit by themselves, so I'm dubing a chapter outside of a book a unit. This is my Getting started in OpenCL unit.
+
+Topic: Parallelism:
+
+Concepts: 
+1. Parallelism vs. Serial
+2. Bit level
+3. Instruction Level
+4. Data Level
+5. Task Level
+
+Key Words:
+Parallel
+Serial
+
+1. Parallelism vs. Serial
+Summary:
+There are two was to do things in computers. You can do it in Parallel through SIMD or threading, or you can do them in Serial which is the norm for computers. (If you understand everything I just said, skip on to the next concept. Ideally everything you need to know is here in the summary. If you are uncertain about anything I said, keep reading.)
+
+Explaination 1, pictorial explaination:
+Imagine doing things in your computer is like a road. doing them in serial is like a 1 lane road: (insert 5 cars in serial picture here)
+
+To get from point A to point B there can be only one car at a time (yes, i know, there is the other lane. shush. we aren't dealing with the concept of duplexing right now!) Now, yes, there are 5 cars on the road, but they are all at different points. the thing I want you to understand here is one comes right after the other, there are never 2 at the same point at the same time. 
+
+Now in parallel it would look more like this: (insert cars in parallel)
+
+Notice how now that there are 4 lanes on this side of the highway there are several cars all going at once. The front has 2 white cars and a purple car all at the same point at the same time. These cars are halfway through that point by the time the second red car is just getting there. The point here being that things may or may not happen at once. but in parallel they can. Some tasks can be starting while others are just finishing. some identical tasks may start at the same time (the 2 whites) some identical tasks may come one right after the other (the 3 reds). Just remember that more than one thing happening at once is the point of parallelism
+
+Explaination 2, musical explaination:
+In music, notes happen in two ways, they are either a melody, or a harmony. Harmony, or chords, are when several notes are played at once. Melody is a set of notes is played one after the other. This is a simple example of parallel vs. serial, harmony is in parallel, melody is in serial.
+
+2. Bit Level:
+Summary:
+Bit level parallelism is not really a concern anymore. It was a concern back in the 1970s when 8-bit processors were the common processor. Inorder to add two 16-bit numbers in an 8-bit processor it would take 2 steps: add lower 8 bits, add upper 8 bits with a carry bit from the first step. This meant that doing this one things, adding 2 16-bit numbers required 2 instructions. now, it is about as likely that you are using a 64-bit processor as a 32-bit one. in either of these cases, the size of the integers are so large that this isn't a concern anymore. So I won't talk about this any further. And you didn't really need to understand it, I just wanted to give credit to its existance. see wiki(http://en.wikipedia.org/wiki/Bit-level_parallelism) for more info if you are curious
+
+3. Instruction Level:
+Summary:
+Instruction level parallelism is execution of a single instruction on multiple data (also calld SIMD). The advantage being that only on instruction must be read in and decoded. But also all the data has to be executed on in lock step.
+
+4. Data Level parallelism:
+Summary:
+Truely a child of task level parallelism. it is esentially threading a for loop.
+
+5. Task Level:
+Multi threading.

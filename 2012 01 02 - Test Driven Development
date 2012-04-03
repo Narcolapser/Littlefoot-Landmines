@@ -1,0 +1,33 @@
+Test Driven Development, or TDD. Its hailed as one of the best approaches to programing. not many people truely enjoy doing it, but the results can't be argued with. 
+
+I've shifted gears from Delta for a little bit. I'm working on a project I've been making for a prof at school. Ceranubis, a distributed processing program. I've tried several times to do test driven development for it, but I've never seemed to get it to work the way I want. Ceranubis deals a lot with networking, and it is hard to make a test class for a class that deals with networking. That's when what should have been obvious final struck me, test driven development should be used in only certain cases, and not in others. 
+
+Lets reason through this idea. What does test driven development do? 
+
+1. Accuracy first and alwasy: Test driven development allows programers to think only once of the edge cases of a program. You program the whole possible range of input for a class into the test class, you then proceed to work out by hand what the results /should/ be. When you know what they should be, you can then run your test class and see if the class your testing is giving the same results. this ensures program accuracy under all conditions. if you go back and change something and it breaks one of the tests, then you know right away that you broke something and you won't have to spend hours later trying to find the bug. this improves code maintainability and stability during growth.
+
+2. Clearity of design: TDD forces programers to think at least once about all edge cases of a program. This means that when the programer actually goes about writing the program, he has a much clearer idea of what the class is supposed to do. I found that when I was doing the TDD that my data structures teacher required, I would look at the provided tests to get an idea of what I was supposed to be doing. 
+
+These are all good things, but what does TDD not do?
+
+1. Test large systems: could you make unit tests for an entire application? not likely. TDD is limited to testing the functionality of base classes. high level classes and the entire application tend to have far to many variables to be accounted for in a test, trying to do so will lead to huge over bearing tests that take far to much time to program and you'd be better off debugging by hand. 
+
+2. Test libraries to lower level systems: This, again, is mostly due to the large number of variables, but there's more. This is the one that really got me, how do you make a test for a class that interfaces with networking or threading? Not saying it can't be done, but the complexities are daunting. Aside from the fact that most of the problems that could occur in this class you'll probably be handling at run-time anyway. If the thread fails to start, if the network socket fails to bind, those are probably not logic errors as much as they are things like "the port is in use". One of my difficulties with the TDD on my network class is that exactly, everything that could be wrong with the class is handled at run time. and you say "well, don't you want to know that the exception handling is going to work correctly?" yes, of course i do. What I don't want to do is spend large amounts of my time writing test that recreates the entire enviorment of my system and then ensuring that that test itself is accurate. I know you should spend time writing tests, they are supposed to be about 50% of your development time. but that is just a bit ridiculous. i would be spending way more time than debugging by hand would take, and this is one case where debugging by hand might even get more accurate results.
+
+What are the pros of TDD?:
+1. Dependable code
+2. Clearity of design
+3. Makes is easier for more than one programer to work together.
+4. Catches most edge cases
+
+What are the cons of TDD?:
+1. Extra time spent writing tests.
+2. You have to know your design before you can write tests.
+3. Passing lots of tests may give you a false sense of security.
+4. Should the test writter miss an edge case, then you loose your dependability.
+
+So where should TDD be used?:
+low level systems and base classes. Things that are entirely self contained. Data structures, parsers, and the like.
+
+Where should TDD not be used?:
+high level systems nad entire programs. Things that have lots of variables and a lot of interconectivity. 

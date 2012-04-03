@@ -1,0 +1,54 @@
+I've decided that this is where I need to start with my new OpenCL tutorial. For me to be able to easily and accurately explain how OpenCL works, I need you to understand what the different kind of parallelisms are.
+
+If you are reading this, you are interested in learning OpenCL, but have no experience programing in such environments. If you are reading this you probably don't have a background in electrical engineering or computer engineering. If you are reading this, you may be familiar with the concept of multi-threading, but may not be aware that there are more kinds of parallelism. Hopefully, you'll be more in the know here soon.
+
+In computer science we can do things in one of two ways. In serial and in parallel. These typically speak for themselves, but just so we are on the same page I'll elaborate. Doing something in serial looks like:
+A->B->C->D->etc.
+A happens, then when its done, B happens, then when it is done, C happens, and D, and so on and so forth. In some cases there are whats called dependencies from A to B and down the line. or in other words, D can't execute before C can, it depends on some of the output values of C. C can't execute before B does, nor could B before A because there because C and B depend on the outputs of the step before them. In the case of dependencies, you must do things in serial. Simply put, serial means that you do things one at a time, one after the other.
+
+Now if there are no dependencies A, B, C, and D they could all be execute at the same time. this is called executing in Parallel. Esentially parallel means that you do several things at once, all together.
+A->
+B->
+C->
+D->
+In order to do this, there are certain physical parameters. The easiest to understand (and we'll stick with the CPU for this example) is the number of processors. If you have only 2 processors you could only do:
+A->B
+C->D
+If you only had one processor you would have to do something like
+A->D->C->B (represented out of order here for the point that execution order doesn't matter)
+The first parallel example would require 4 processors (or a 4-core processor). so the number of things you can do at once depends on the number of processors you have. This is the concept of multi-threading or multi-processing (the distinction between these two I will write about later). 
+
+Multi-threading/multi-processing is an example of task-level-parallelism. There are 4 levels of parallelism: (in order from the bottom up)
+Bit Level
+Instruction level
+Data Level
+Task Level
+
+Bit level parallelism is not really a concern anymore. It was a concern back in the 1970s when 8-bit processors were the common processor. Inorder to add two 16-bit numbers in an 8-bit processor it would take 2 steps: add lower 8 bits, add upper 8 bits with a carry bit from the first step. This meant that doing this one things, adding 2 16-bit numbers required 2 instructions. now, it is about as likely that you are using a 64-bit processor as a 32-bit one. in either of these cases, the size of the integers are so large that this isn't a concern anymore. So I won't talk about this any further.
+
+Instruction Level:
+This level of parallelism gets divided into 2 categories. the one we aren't really concerned about because it happens under the hood is called instruction pipelines. in the average processor, there are typically several instructions being executed at once. But the way this works doesn't create multi-core processor like we know it today. This is just the common place way that instructions execute in a processor. Again, we aren't concerned with writing operating systems right now, so I'm going to leave this here. This isn't something we can really exploit or even interface with at all.
+
+The other kind of instruction level parallelism is called "Superscalar" processors. In this case, a single processor executes one instruction more than onces at the same time. (Instruction: In machine language, binary essentially, what your processor actually sees, each function or step is called an instruction.) This is also sometimes called "SIMD" which stands for "Single Instruction Multiple Data". SIMD is what I want you to remember and wrap your mind around with this level. 
+
+Say I have 8 values, i want to add every 2 together, so first + second, third + fourth, fifth + sixth, and the seventh + the eighth. In a normal processor instruction it would happen just like that. group 1, group 2, group 3, group 4. with SIMD, which is actually available to you in most modern processors, the values in 1st, 2nd, 3rd, and 4th all get placed in special registers in the processor and then the processor does executes the add instruction once, and it does both group 1 and group 2 at the same time. in this manner the number of instructions is halved. (a register is the lowest level of storage. RAM and the cache are made up of groups of registers. When ever your processor executes an instruction, it reads the data from a register to a register. if it wants to use something in RAM or cache, it reads it from them to a register and then it executes the instruction. see my post on memory access for further details.)
+
+A graphics card is an example of the first word I used. It is a "Superscalar" processor. Instead of loading group 1 and 2 into special registers, the graphics card loads all the groups in clumps of 2 into individual stream processors. so 4 stream processors get used. The important thing to know about a stream processor is it has no control systems. A stream processor does what it is told, it never figures out what to do. So the GPU says add your first and your second to the stream processors. It is important to note here that the GPU need not and further cannot even if you wanted to, address each stream processor individually. When the GPU says "ADD!" all the stream processors add. when the GPU says "Load from your location + 1" stream processor 1 loads from memory location 2, stream processor 2 loads from memory location 3, etc. Its called performing instructions in "lock step". (meaning, each stream processor is locked into the same step as all the others) This may seem like it restricts what the graphics card can do, if you think that, you are right.
+
+Here's the thing. Because we've restricted what the graphics card can do, there are fewer things to concern our selves about. We can then make those few instructions go super fast. So great amounts of speed are gained by applying these restrictions. This is how your graphics card can paint 1980x1080 pixels 60 times a second. (if the GPU were to do 1 instruction per pixel, that would be 128 million instructions a second. To put it in context. A GPU with 1024 stream processors [middle high end] can execute 640,000,000,000 instructions per second. A quad core CPU can execute 9,600,000,000 instructions instructions per second. see how restrictions can be useful?)
+
+So, summarize, instruction level parallelism as we are concerned with, takes multiple data and performs the exact same function (the exact same function being the important point here) on them all at once. For an analogy to imagine how this works, think of it like the stream processors are all grunts and the GPU is a drill sargent. The drill sargent bark "Make your bed!" and the stream processors all go "Sir yes Sir" and turn and make their bed. Anything the drill sargent yells out all the grunts do.
+
+Data level parallelism:
+Data level parallelism is a theoretical concept. It actually rides on top of task level parallelism, but with some key differences. The easiest way to imagine data level parallelism is to think of a for loop. Assuming that one iterations of the for loop has no dependencies on any of the other iterations, a data level parallelism will execute all (or as many as physically possible) of the iterations of the for loop at once. Each processor is running the exact same code, but on different data. how does this differ from instruction level parallelism? The big thing is that while the same code is being executed, each execution is not in lock step. There is an efficiency gain because there is a sharing of code, but they don't have to all execute at exactly the same time. This is conceptually like a group of custodians at a hotel. 4 of them head out with 1 cart of cleaning supplies. they each take their own room, but progress at different rates based on how long it takes to clean each room. There is effeciency for the hotel here though because it only has to pay for 1 cart. Similarly, because only 1 cart has to be prepared, the custodians are saved a little time as well.
+
+Task level parallelism:
+This is were a lot of attention is being put currently in computer engineering and software engineering. Here's what makes task level parallelism so important: there need not be anything in common between the separate tasks. Here's what makes it so hard: what if there is something common between the separate tasks?
+
+Ok, now decoding my last two statements a little. Instruction level parallelism had each separate instance executing in lock step. data level it wasn't in lock step, but all instances were within a for loop. With task level there can be two completely un-related tasks running at the same time. consider your computer's network driver and a text editor. nothing at all in common, but they can run at the same time. This creates a huge amount of flexibility, but extra flexibility brings extra overhead.
+
+But this also begs the question, what happens if/when the tasks share? There are a lot of things such as locks and semaphores that ensure that different tasks don't step on each others toes. But those control structures are not free. Some times there isn't concern over stepping on each others toes, but it can some times be hard to even share the information. 
+
+So my point is that while task level parallelism sounds attractive because you can execute what ever you want when ever you want, be careful, that freedom comes at a price. Instruction level parallelism may feel restricting, but because of those restrictions it avoids the overhead involved with task level parallelism.
+
+So this, as with everything, is a trade off. So remember that appropriateness is key. Complete independent tasks? Task level. Large data sets with identical instructions? Instruction level.

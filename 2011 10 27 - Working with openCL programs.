@@ -1,0 +1,111 @@
+So. it turns out, programing and debugging is hard. Not that that should suprise anyone. Particularly if you are reading this. But what i'm refering to particularly is trying to program and debug openCL kernels. I like to think I'm a pretty slick programmer. I should really use a debugger more often then I do, but I can manage typically to figure out all of my class assignements using only compiler out put and a lot of thinking. Trying the same approach with these OpenCL kernels has miserably failed. The reason being, I really have no clues as to why compiling kernels fails. This whole system is still very new to me, so having no clues is remarkably not helpful. 
+
+So I went out in search of help. What I found was the intel sdk offline compiler. But it was a .rpm not a .deb. But I decided to press my luck and give it a go. I converted the .rpm with "alien sdk.rpm" and then installed it. Took me a moment but I eventually figured out that the program names were "ioc" and "iocgui.sh". Then I tried ioc. gave me an error about libnuma.so shared library not found. so i tried iocgui.sh, it gave me a pair of errors but the gui still came up. I tried to compile, and no luck. nothing happened, say for the build log turning red. The fix was simple obvious, though to my great embarrasment i didn't realize such for almost an hour and a half. sudo apt-get install libnuma-dev was all I needed to get it working, on Red Hat and its kin this may not be a problem. 
+
+So now I have intel sdk offline compiler, or IOC. What can I do with this then eh? Well, I can start with code that I think works like this:
+
+__kernel void force(float** Galaxy, const unsigned int starc)
+{
+	int i = get_global_id(0);
+
+	float x,y,z,d,force;
+	int j;
+	for(j = 0; j < starc; j++)
+	{    
+		if (j == i) continue;
+		//find relative distance
+		x = Galaxy[i][1] - Galaxy[j][1];
+		y = Galaxy[i][2] - Galaxy[j][2];
+		z = Galaxy[i][3] - Galaxy[j][3];
+		d = x*x+y*y+z*z;
+		if (d == 0) continue;
+		force = ((0.00000066742799999999995)*Galaxy[i][0]*Galaxy[j][0])/(d);
+		Galaxy[i][7] = (x*x)*force*(-1)/d;
+		Galaxy[i][8] = (y*y)*force*(-1)/d;
+		Galaxy[i][9] = (z*z)*force*(-1)/d;
+	}//end for loop
+}
+
+but know it doesn't because my program fails to build it every time. enter the code in the IOC and get a compiler out put like this:
+
+Using default instruction set architecture.
+Intel OpenCL CPU device was found!
+Device name: Intel(R) Core(TM)2 Quad CPU    Q6600  @ 2.40GHz
+Device version: OpenCL 1.1 (Build 15293.6649)
+Device vendor: Intel(R) Corporation
+Device profile: FULL_PROFILE
+:1:1: error: kernel argument can't be a pointer to pointer in OpenCL
+:1:1: error: kernel argument can't be a pointer to pointer in OpenCL
+
+Build failed!
+
+well dang. There goes a base assumption on how I was going to work this. It would seem that you can't have an array of arrays in openCL. Not to big of a problem really. in this case, my array is an array of arrays of uniform size. each array is even 10 elements, making it real easy to just simply have it be 1 big array. if i want Galaxy[10][3] i just give it instead Galaxy[10*10+3]. now to rewrite it that way I get this:
+
+__kernel void force(float* Galaxy, const unsigned int starc)
+{
+	int i = get_global_id(0);
+
+	float x,y,z,d,force;
+	int j;
+	for(j = 0; j < starc; j++)
+	{    
+		if (j == i) continue;
+		//find relative distance
+		x = Galaxy[i*10+1] - Galaxy[j*10+1];
+		y = Galaxy[i*10+2] - Galaxy[j*10+2];
+		z = Galaxy[i*10+3] - Galaxy[j*10+3];
+		d = x*x+y*y+z*z;
+		if (d == 0) continue;
+		force = ((0.00000066742799999999995)*Galaxy[i*10]*Galaxy[j*10])/(d);
+		Galaxy[i*10+7] = (x*x)*force*(-1)/d;
+		Galaxy[i*10+8] = (y*y)*force*(-1)/d;
+		Galaxy[i*10+9] = (z*z)*force*(-1)/d;
+	}//end for loop
+}
+
+and it says this:
+
+/*blah blah blah you don't care about my computer architecture so I'll leave that out*/
+:1:1: error: Arguments to __kernel that are pointers must be declared with the __global, __constant or __local qualifier in OpenCL
+:1:1: error: Arguments to __kernel that are pointers must be declared with the __global, __constant or __local qualifier in OpenCL
+
+Build failed!
+
+A VAST! so that is where my major logical disconnect is. Galaxy needs to be global! so I change my first line to:
+
+__kernel void force(__global float* Galaxy, const unsigned int starc)
+
+and it says:
+
+Build started
+Kernel <force> was not vectorized
+Done.
+Build succeeded!
+
+Not sure what it means by "Kernel <force> was not vectorized". So i tried looking at the assembly code. Upon looking at said code it became incredibly clear that I don't know what the heck I'm looking at. I mean, I know assembly, but not for my graphics card, so i decided that if the build succeeded, I'll be content and try plugging this back into my program. But in doing so I took a cue from the big blob blog and moved the code to a seperate code file. This was done largely because with this offline compiler I can work with kernels in it and then save them as .cl files. trying to then turn it into a string just sounded like more trouble than it was worth, so i'm going to read it in instead. his method for loading the kernel source is this:
+
+#define MAX_SOURCE_SIZE (0x100000)
+...
+...
+...
+    // Load the kernel source code into the array source_str
+    FILE *fp;
+    char *source_str;
+    size_t source_size;
+ 
+    fp = fopen("vector_add_kernel.cl", "r");
+    if (!fp) {
+        fprintf(stderr, "Failed to load kernel.\n");
+        exit(1);
+    }
+    source_str = (char*)malloc(MAX_SOURCE_SIZE);
+    source_size = fread( source_str, 1, MAX_SOURCE_SIZE, fp);
+    fclose( fp );
+
+and that looks like a pretty good idea to me. so i shamelessly copied it. this also ment a minor alteration of my program creation line from:
+	program = clCreateProgramWithSource(context, 1, (const char **) & KernelSourceForce, NULL, &err);
+to:
+	program = clCreateProgramWithSource(context, 1, (const char **) & KernelSourceForce, (const size_t *) & source_size, &err);
+tehcnically I could probably get away with out includeing "source_size" as the string should be null terminated. but since I have it, may as well pass it along. also, you'll notice the cast that he had that i have also "(const size_t *) &" reasons for this. firstly, because of the nature of the beast, you can't actually pass the value, it has to be a pointer. even though passing a 32-bit int is smaller than a 64-bit pointer, it just must be this way. as for size_t. that has to do also with nature of the beat. size_t is a platform depend unsighned data type. so this allows openCL to make your int readable by the GPU.
+
+with those simple changes I compiled and ran and the kernel built! oh happy happy day!
