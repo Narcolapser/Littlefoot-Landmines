@@ -1,0 +1,70 @@
+I've decided to not use Kodachi for further development on Delta. The compiling and running of Delta is just a little to much for the software graphics drivers. So you, my zero readers, will still hear me talk about it, but only when I'm actually at my desktop.
+
+What I'm going to do when I'm away from my desktop for now is start playing with other source codes. Particularly I'm starting with Quake. So today begins my first game disection! I've got no idea what I'm doing so here goes nothing!
+
+Not knowing anything to begin with I look at the root of the "Quake" folder:
+3 folders:
+QW  qw-qc WinQuake
+2 files:
+gnu.txt  readme.txt  
+
+first thing I notice is that the target audience is windows users. One because of "WinQuake" but also, in most unix projects like this you would see:
+gnu
+README
+with no extension. Just a little quirk. Second thing I notice, there are no data files. this is strictly the source code, I can't build this and run quake. But that's ok, I don't really want to play Quake right now, I want to see how this works.
+
+So carrying on. the gnu and readme files are just lisences and such. so on to the folders. QW first. I see a collection of files and folders. most of the folders contain various c files. one folder sticks out. "docs" maybe there I could find some help for getting started in understanding this.
+
+no avail. The 4 files inside were mostly on how to get different window wrappers to work. So I go back up to QW. I see "clean.bat" maybe be seeing what needs to be deleted, I can see what's important. This didn't help really at all. I found an interesting file called "cmds.txt". it contains things like:
+cd
++moveup -moveup
++movedown -movedown
++left -left
+version", CL_Version_f
+changing", CL_Changing_f
+disconnect", CL_Disconnect_f
+record", CL_Record_f
+stop", CL_Stop_f
+playdemo", CL_PlayDemo_f
+timedemo", CL_TimeDemo_f
+
+obviously, this are terminal commands. Not what I'm looking for.
+
+Next I inspect "Makefile.Linux" to see if I can decode what depends on what. I'm still such a rookie with make that I can't decode anything. Inspection of the remaining files in here didn't yield anything. I glance over a couple folders and don't find anything particularly leading. So I jump into the server folder. this and client I know have make files. so I start with the server for some reason.
+
+in the server file I find the line:
+$(EXE) : $(OFILES)
+	cc $(CFLAGS) -o $(EXE) $(OFILES) $(LDFLAGS) 
+
+I glance up and find:
+EXE = qwsv
+
+I'm finding something! qwsv seems to be an important file. qwsv is 5 files. qwsv.dsp, qwsv.dsw, qwsv.mak, qwsv.mdp, and qwsv.plg. I look at qwsv.mak. another huge wall of make I cna't make heads or tails of. *sigh* I get an idea. What if I enter to command line: "Grep "somefile.h" -l *"? this will output any file that include that file. so I'll start with something that looks low, and work up until there aren't any files that include it.
+
+I tried "progsdef.h" sounds like a low file. gave me:
+progs.h
+qwsv.dsp
+qwsv.mak
+qwsv.mdp
+So i tried "progs.h" and it gave me nothing. gah! ok. so what files do I have to work with here?
+asm_i386.h  newnet.txt  pr_exec.c    qwsvdef.h  qwsv.plg    sv_main.c   sv_user.c   world.c
+makefile    notes.txt   profile.txt  qwsv.dsp   server.h    sv_move.c   sys.h       world.h
+math.s      pr_cmds.c   progdefs.h   qwsv.dsw   sv_ccmds.c  sv_nchan.c  sys_unix.c
+model.c     pr_comp.h   progs.h      qwsv.mak   sv_ents.c   sv_phys.c   sys_win.c
+move.txt    pr_edict.c  quakeasm.h   qwsv.mdp   sv_init.c   sv_send.c   worlda.s
+
+so. what has hopes here. anything without a .c or a .h isn't going to be of interest. that reduces it to:
+asm_i386.h  pr_comp.h   progdefs.h  qwsvdef.h   sv_ents.c  sv_move.c   sv_send.c  sys_unix.c  world.h
+model.c     pr_edict.c  progs.h     server.h    sv_init.c  sv_nchan.c  sv_user.c  sys_win.c
+pr_cmds.c   pr_exec.c   quakeasm.h  sv_ccmds.c  sv_main.c  sv_phys.c   sys.h      world.c
+i know progdefs and progs won't help. the asms aren't going to be a good starting point either. any sys ones are likely to be just system wrappers and not what I need. model, move, phys, user, send, world, ccmds,  and nchan I can rule out pretty quickly as well.
+pr_comp.h   qwsvdef.h   sv_ents.c  
+pr_edict.c  server.h    sv_init.c
+pr_exec.c  
+i'm down to 7 files. sever, init, and exec look the most promising. I'm going to start with exec. first thing i notice is:
+#include "qwsvdef.h"
+what's that file? it turns out to be a nice and easy to digest file, with structs and other common includes. so I can take that one off my list up above as well.
+
+Then the most obvious thing hit me. grep for "int main" duh! and I got sys_win.c. I did "void main" and I got sys_unix.c. hmmm. I did just "main" and got a bunch. So I'm going to jump over to sys_unix.c.
+
+

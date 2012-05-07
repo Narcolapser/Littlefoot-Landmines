@@ -1,0 +1,5 @@
+So I have found the main loop. and two very important lines:
+SV_Init (&parms);
+SV_Frame (0.1);
+
+so where is SV_init, I grepped it and SV_init is in SV_main.c amongst other things. 
