@@ -1,1 +1,49 @@
-So I have found the main loop. 
+I found some one else who did this:
+http://fabiensanglard.net/quakeSource/index.php
+
+I got a few pointers from him, but the thing I didn't like is he seemed like he was paraphrasing the code or using a different verison. but he did clue me into one important thing:
+
+    WinQuake is the code with client and server code melted together, running within one single process (Ideally, they would have been two different processes if DOS had supported them). Network gaming was still possible via LAN only.
+    QW is "Quake World" project, where Server and Client are meant to run on different machine (notice the client staring point is WinMain (in sys_win.c), whereas the Server stating point is main (also in sys_win.c)).
+
+oh. cd to WinQuake not Quake world. picking up there with sys_linux.c
+
+ok. lets look at everything that takes place before the main loop. First we are met with a couple variable declarations, lines 357-361:
+
+	double		time, oldtime, newtime;
+	quakeparms_t parms;
+	extern int vcrFile;
+	extern int recording;
+	int j;
+
+time, oldtime, and newtime are variables that will get used to figure out how the program relates to real time. old time is the begining of the last frame, new time is the begining of the new frame. time is typically the difference.
+
+I'll come back to params, it has a lot to do with what is coming.
+
+vcrfile and recording. vcr = video recording casset. wow quake is old. that's really kinda funny that they named the file which they record to a vcr file. recording is another flag that gets used later. recording or not. boolean basically.
+
+j is temp storage for later. 
+
+Line 366:
+	signal(SIGFPE, SIG_IGN);
+
+firstly, what is SIGFPE and SIG_IGN? neither are really referenced in this file any where else. that means they must be some where else. same with signal. so hunting I go. firstly, where is SIGFPE? grepping got me this:
+gl_vidlinux.c:	signal(SIGFPE, signal_handler);
+gl_vidlinuxglx.c:	signal(SIGFPE, signal_handler);
+... what? Where is SIGFPE declared... wait, why does gedit have it highlighted? Well, a quick check of wikipedia and I find that SIGFPE is short for SIGnal Floating-Point Exception. more importantly i also found: http://www.cplusplus.com/reference/clibrary/csignal/signal/
+So. SIGFPE is floating point and SIG_IGN is SIGnal IGNore. Also. signal is not a quake thing, rather #include <signal.h>. Basically, its saying that if there is a floating point expection, just ignore it. interesting. 
+
+Line 368:
+	memset(&parms, 0, sizeof(parms));
+memset is a convenient method for initalizing memory. in this case it is setting all of params to be 0. 
+
+Line 370:
+	COM_InitArgv(c, v);
+c and v are argc and argv respectively. COM_InitArgv comes from common.c, i'm going to go out on a limb and conjecture that anything with "COM" in front of it comes form the common.c file. thanks ID! that is a really smart way of doing that. in this case it appears to "reconstitute the command line for the cmdline externally visible cvar" which I don't know entirely what that means, but command line stuff. not really what i'm intersted in right now.
+
+Lines 371,372:
+	parms.argc = com_argc;
+	parms.argv = com_argv;
+changes params to the new args. Not really a lot to say about this.
+
+
