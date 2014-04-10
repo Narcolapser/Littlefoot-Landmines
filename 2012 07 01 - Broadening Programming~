@@ -10,4 +10,6 @@ What I'm imagining is I'll have a library, then a simple test interface to that 
 
 This way I can develop libraries that are useful for these languages and I can develop useful libraries that I can use with these languages later.
 
-So, what do I need to focus what I need to learn about these languages. 
+So, what do I need to focus what I need to learn about these languages. These are the main things I have come up with that I need to focus on when working with these languages.
+
+I've already started working with python on my first project, a collision detection library, which also happens to include various lower level math libraries that will be of great value to me later. a linearAlgebra library, a Geometry library, and a boundingVolume library. These have lots of potential use for collision/physics engines, as well as graphics systems such as OpenGL but also such as RayTracers. 
